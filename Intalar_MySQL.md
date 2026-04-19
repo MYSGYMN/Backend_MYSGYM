@@ -1,3 +1,5 @@
+# Instalar MySQL en Linux Mint
+
 1. Actualizar el sistema
 
 ```bash
@@ -5,7 +7,7 @@ sudo apt update
 sudo apt upgrade -y
 ```
 
-✅ 2. Instalar MySQL Server
+1. Instalar MySQL Server
 
 Linux Mint 22.2 usa repositorios compatibles con MySQL 8.x.
 
@@ -21,7 +23,7 @@ Esto instala:
 - mysql (cliente)
 - scripts de inicialización
 
-✅ 3. Verificar que MySQL está corriendo
+1. Verificar que MySQL está corriendo
 
 ```bash
 sudo systemctl status mysql
@@ -41,7 +43,7 @@ Si no está activo:
 sudo systemctl start mysql
 ```
 
-4. Asegurar la instalación
+1. Asegurar la instalación
 
 MySQL incluye un script para endurecer la seguridad:
 
@@ -60,7 +62,7 @@ Responde así (recomendado):
 | Remove test database? | y |
 | Reload privilege tables? | y |
 
-5. Entrar a MySQL como root
+1. Entrar a MySQL como root
 
 ```bash
 sudo mysql
@@ -79,7 +81,7 @@ Salir:
 exit;
 ```
 
-6. Crear la base de datos del proyecto
+1. Crear la base de datos del proyecto
 
 ```bash
 sudo mysql -u root -p
@@ -91,7 +93,7 @@ Dentro del prompt:
 CREATE DATABASE gimnasio;
 ```
 
-7. Crear usuarios para el proyecto (requisito del bootcamp)
+1. Crear usuarios para el proyecto (requisito del cliente)
 
 Usuario de la aplicación:
 
@@ -113,7 +115,7 @@ Aplicar cambios:
 FLUSH PRIVILEGES;
 ```
 
-8. Probar conexión
+1. Probar conexión
 
 Como root:
 
@@ -127,15 +129,15 @@ Como app_user:
 mysql -u app_user -p gimnasio
 ```
 
-9. Exportar la base de datos (dump)
+1. Exportar la base de datos (dump)
 
-Requisito del bootcamp:
+Requisito del cliente:
 
 ```bash
 mysqldump -u root -p gimnasio > gimnasio_backup.sql
 ```
 
-10. Comandos útiles
+1. Comandos útiles
 
 Reiniciar MySQL:
 
