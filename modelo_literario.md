@@ -110,7 +110,7 @@ El sistema MYSGYM debe permitir:
 
 ### 2.4 Descripción de los actores
 
-**Socios**  
+**Usuarios**  
 Personas inscritas en el gimnasio. Pueden reservar clases, pagar cuotas y acceder a servicios.
 
 **Empleados**  
@@ -130,7 +130,7 @@ Encargados de gestionar:
 
 ### 2.5 Procesos principales del negocio
 
-**5.1 Gestión de Socios**
+**5.1 Gestión de Usuarios**
 
 - Registro de nuevos socios  
 - Actualización de datos personales  
@@ -143,7 +143,7 @@ Encargados de gestionar:
 - Asignación de roles (monitor, recepcionista, admin)  
 - Asignación de clases a monitores  
 
-**5.3 Gestión de Clases**
+**5.3 Gestión de Actividades**
 
 - Creación de clases con actividad, monitor, sala y horario  
 - Definición de capacidad máxima  
