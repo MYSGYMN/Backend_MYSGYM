@@ -1,152 +1,161 @@
-# Instalar MySQL en Linux Mint
+# Instalar MySQL en Docker + MySQL Workbench (Linux Mint)
 
-1. Actualizar el sistema
+## 1. Actualizar el sistema
 
 ```bash
 sudo apt update
 sudo apt upgrade -y
 ```
 
-1. Instalar MySQL Server
-
-Linux Mint 22.2 usa repositorios compatibles con MySQL 8.x.
-
-Ejecuta:
+## 2. Instalar Docker Engine y Docker Compose plugin
 
 ```bash
-sudo apt install mysql-server -y
+sudo apt install -y docker.io docker-compose-plugin
+sudo systemctl enable --now docker
 ```
 
-Esto instala:
-
-- mysqld (servidor)
-- mysql (cliente)
-- scripts de inicialización
-
-1. Verificar que MySQL está corriendo
+Opcional (para usar Docker sin sudo):
 
 ```bash
-sudo systemctl status mysql
+sudo usermod -aG docker $USER
+newgrp docker
 ```
 
-Debes ver:
+## 3. Evitar conflicto de puerto 3306 (si tienes MySQL local)
 
-Código
-
-```text
-active (running)
-```
-
-Si no está activo:
+Si ya tenias MySQL instalado en el host, detenlo para liberar el puerto 3306:
 
 ```bash
-sudo systemctl start mysql
+sudo systemctl stop mysql
+sudo systemctl disable mysql
 ```
 
-1. Asegurar la instalación
-
-MySQL incluye un script para endurecer la seguridad:
+## 4. Levantar MySQL en contenedor Docker
 
 ```bash
-sudo mysql_secure_installation
+docker volume create mysql_data
+
+docker run -d \
+	--name mysql-gym \
+	-e MYSQL_ROOT_PASSWORD=RootPass123! \
+	-e MYSQL_DATABASE=gimnasio \
+	-p 3306:3306 \
+	-v mysql_data:/var/lib/mysql \
+	--restart unless-stopped \
+	mysql:8.0
 ```
 
-Responde así (recomendado):
-
-| Pregunta | Respuesta |
-| --- | --- |
-| VALIDATE PASSWORD PLUGIN | n |
-| New password for root | (elige una contraseña segura) |
-| Remove anonymous users? | y |
-| Disallow root login remotely? | y |
-| Remove test database? | y |
-| Reload privilege tables? | y |
-
-1. Entrar a MySQL como root
+Verifica que este corriendo:
 
 ```bash
-sudo mysql
+docker ps
+docker logs -n 50 mysql-gym
 ```
 
-Si quieres usar contraseña en vez de autenticación por socket:
+Debes ver mensajes similares a "ready for connections".
+
+## 5. Entrar a MySQL dentro del contenedor
+
+```bash
+docker exec -it mysql-gym mysql -u root -p
+```
+
+Cuando pida password, usa la que definiste en MYSQL_ROOT_PASSWORD.
+
+## 6. Crear usuarios para el proyecto
+
+Dentro del prompt de MySQL:
 
 ```sql
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'TuPasswordSegura';
+CREATE DATABASE IF NOT EXISTS gimnasio;
+
+CREATE USER IF NOT EXISTS 'app_user'@'%' IDENTIFIED BY 'segura123';
+GRANT SELECT, INSERT, UPDATE ON gimnasio.* TO 'app_user'@'%';
+
+CREATE USER IF NOT EXISTS 'admin'@'%' IDENTIFIED BY 'adminpass';
+GRANT ALL PRIVILEGES ON gimnasio.* TO 'admin'@'%';
+
 FLUSH PRIVILEGES;
 ```
 
-Salir:
+## 7. Probar conexion desde host
 
-```sql
-exit;
-```
-
-1. Crear la base de datos del proyecto
+Instala cliente MySQL en el host (si no lo tienes):
 
 ```bash
-sudo mysql -u root -p
+sudo apt install -y mysql-client
 ```
 
-Dentro del prompt:
-
-```sql
-CREATE DATABASE gimnasio;
-```
-
-1. Crear usuarios para el proyecto (requisito del cliente)
-
-Usuario de la aplicación:
-
-```sql
-CREATE USER 'app_user'@'localhost' IDENTIFIED BY 'segura123';
-GRANT SELECT, INSERT, UPDATE ON gimnasio.* TO 'app_user'@'localhost';
-```
-
-Usuario administrador:
-
-```sql
-CREATE USER 'admin'@'localhost' IDENTIFIED BY 'adminpass';
-GRANT ALL PRIVILEGES ON gimnasio.* TO 'admin'@'localhost';
-```
-
-Aplicar cambios:
-
-```sql
-FLUSH PRIVILEGES;
-```
-
-1. Probar conexión
-
-Como root:
+Prueba como root:
 
 ```bash
-mysql -u root -p
+mysql -h 127.0.0.1 -P 3306 -u root -p
 ```
 
-Como app_user:
+Prueba como app_user:
 
 ```bash
-mysql -u app_user -p gimnasio
+mysql -h 127.0.0.1 -P 3306 -u app_user -p gimnasio
 ```
 
-1. Exportar la base de datos (dump)
-
-Requisito del cliente:
+## 8. Instalar MySQL Workbench
 
 ```bash
-mysqldump -u root -p gimnasio > gimnasio_backup.sql
+sudo apt install -y mysql-workbench
 ```
 
-1. Comandos útiles
-
-Reiniciar MySQL:
+Abrir Workbench:
 
 ```bash
-sudo systemctl restart mysql
+mysql-workbench
 ```
 
-Ver versión:
+Configura una conexion nueva con estos datos:
+
+- Connection Name: MySQL Docker Local
+- Connection Method: Standard (TCP/IP)
+- Hostname: 127.0.0.1
+- Port: 3306
+- Username: root (o app_user)
+- Password: la que configuraste
+
+## 9. Exportar base de datos (dump)
+
+Desde el host, usando el puerto publicado por el contenedor:
 
 ```bash
-mysql --version
+mysqldump -h 127.0.0.1 -P 3306 -u root -p gimnasio > gimnasio_backup.sql
+```
+
+Alternativa ejecutando dentro del contenedor:
+
+```bash
+docker exec mysql-gym sh -c 'mysqldump -u root -p"$MYSQL_ROOT_PASSWORD" gimnasio' > gimnasio_backup.sql
+```
+
+## 10. Comandos utiles
+
+Detener/Iniciar el contenedor:
+
+```bash
+docker stop mysql-gym
+docker start mysql-gym
+```
+
+Reiniciar el contenedor:
+
+```bash
+docker restart mysql-gym
+```
+
+Ver version de MySQL del contenedor:
+
+```bash
+docker exec mysql-gym mysql --version
+```
+
+Ver estado del contenedor:
+
+```bash
+docker ps -a --filter name=mysql-gym
 ```
