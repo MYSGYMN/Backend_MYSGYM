@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Entorno Virtual
+.venv/
+venv/
+ENV/
+
+# Configuración y Secretos
+.env
+
+# Base de datos local (SQLite si se usara)
+*.sqlite3
+*.db
+
+# IDEs
+.vscode/
+.idea/
+
+# Flask
+instance/
+.webassets-cache
