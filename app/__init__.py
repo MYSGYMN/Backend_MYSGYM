@@ -23,10 +23,16 @@ def create_app(config_class=Config):
     from app.routes.auth import auth_bp
     from app.routes.usuarios import usuarios_bp
     from app.routes.gym import gym_bp
+    from app.routes.reservas import reservas_bp
+    from app.routes.pagos import pagos_bp
+    from app.routes.mantenimiento import mantenimiento_bp
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(usuarios_bp, url_prefix='/usuarios')
     app.register_blueprint(gym_bp, url_prefix='/gym')
+    app.register_blueprint(reservas_bp, url_prefix='/reservas')
+    app.register_blueprint(pagos_bp, url_prefix='/pagos')
+    app.register_blueprint(mantenimiento_bp, url_prefix='/mantenimiento')
 
     @app.route('/')
     def index():
@@ -35,8 +41,11 @@ def create_app(config_class=Config):
             "message": "Bienvenido a la API de MYSGYM",
             "endpoints": {
                 "auth": "/auth/register, /auth/login",
-                "usuarios": "/usuarios (requiere JWT)",
-                "gym": "/gym/actividades, /gym/salas"
+                "usuarios": "/usuarios (JWT)",
+                "gym": "/gym/actividades, /gym/salas",
+                "reservas": "/reservas (JWT)",
+                "pagos": "/pagos (JWT)",
+                "mantenimiento": "/mantenimiento/materiales, /mantenimiento/incidencias"
             }
         }
 
