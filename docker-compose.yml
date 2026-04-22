@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysgym_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: gimnasio
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./database:/var/lib/mysql
+      - ./database_schema.sql:/docker-entrypoint-initdb.d/1.sql

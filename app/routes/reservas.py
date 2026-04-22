@@ -48,3 +48,34 @@ def listar_mis_reservas():
         "fecha": str(r.fecha_reserva),
         "estado": r.estado
     } for r in reservas]), 200
+
+@reservas_bp.route('/<int:id>', methods=['DELETE'])
+@jwt_required()
+def cancelar_reserva(id):
+    current_user_id = get_jwt_identity()
+    reserva = Reserva.query.get(id)
+    
+    if not reserva:
+        return jsonify({"message": "Reserva no encontrada"}), 404
+        
+    if str(reserva.usuario_id) != str(current_user_id):
+        return jsonify({"message": "No tienes permiso para cancelar esta reserva"}), 403
+        
+    db.session.delete(reserva)
+    db.session.commit()
+    
+    return jsonify({"message": "Reserva cancelada con éxito"}), 200
+
+@reservas_bp.route('/<int:id>', methods=['PUT'])
+@jwt_required()
+def actualizar_estado_reserva(id):
+    # Esto sería útil para un admin o monitor
+    reserva = Reserva.query.get(id)
+    if not reserva:
+        return jsonify({"message": "Reserva no encontrada"}), 404
+        
+    data = request.get_json()
+    reserva.estado = data.get('estado', reserva.estado)
+    db.session.commit()
+    
+    return jsonify({"message": "Estado de reserva actualizado"}), 200

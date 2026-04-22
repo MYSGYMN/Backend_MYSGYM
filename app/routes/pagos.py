@@ -37,3 +37,29 @@ def historial_pagos():
         "metodo": p.metodo_pago,
         "estado": p.estado
     } for p in pagos]), 200
+
+@pagos_bp.route('/<int:id>', methods=['PUT'])
+@jwt_required()
+def actualizar_pago(id):
+    pago = Pago.query.get(id)
+    if not pago:
+        return jsonify({"message": "Pago no encontrado"}), 404
+        
+    data = request.get_json()
+    pago.monto = data.get('monto', pago.monto)
+    pago.estado = data.get('estado', pago.estado)
+    pago.metodo_pago = data.get('metodo_pago', pago.metodo_pago)
+    
+    db.session.commit()
+    return jsonify({"message": "Pago actualizado con éxito"}), 200
+
+@pagos_bp.route('/<int:id>', methods=['DELETE'])
+@jwt_required()
+def eliminar_pago(id):
+    pago = Pago.query.get(id)
+    if not pago:
+        return jsonify({"message": "Pago no encontrado"}), 404
+        
+    db.session.delete(pago)
+    db.session.commit()
+    return jsonify({"message": "Pago eliminado con éxito"}), 200

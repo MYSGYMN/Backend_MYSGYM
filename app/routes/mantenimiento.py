@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
 from app.models import Material, Incidencia, db
 from datetime import datetime
+from app.utils import admin_required
 
 mantenimiento_bp = Blueprint('mantenimiento', __name__)
 
@@ -19,6 +20,7 @@ def get_materiales():
 
 @mantenimiento_bp.route('/materiales', methods=['POST'])
 @jwt_required()
+@admin_required()
 def crear_material():
     data = request.get_json()
     nuevo_material = Material(
@@ -30,27 +32,53 @@ def crear_material():
     db.session.commit()
     return jsonify({"message": "Material registrado con éxito"}), 201
 
+@mantenimiento_bp.route('/materiales/<int:id>', methods=['PUT'])
+@jwt_required()
+@admin_required()
+def actualizar_material(id):
+    material = Material.query.get(id)
+    if not material:
+        return jsonify({"message": "Material no encontrado"}), 404
+    data = request.get_json()
+    material.nombre = data.get('nombre', material.nombre)
+    material.estado = data.get('estado', material.estado)
+    material.sala_id = data.get('sala_id', material.sala_id)
+    db.session.commit()
+    return jsonify({"message": "Material actualizado con éxito"}), 200
+
+@mantenimiento_bp.route('/materiales/<int:id>', methods=['DELETE'])
+@jwt_required()
+@admin_required()
+def eliminar_material(id):
+    material = Material.query.get(id)
+    if not material:
+        return jsonify({"message": "Material no encontrado"}), 404
+    db.session.delete(material)
+    db.session.commit()
+    return jsonify({"message": "Material eliminado con éxito"}), 200
+
 # --- ENDPOINTS PARA INCIDENCIAS ---
 
 @mantenimiento_bp.route('/incidencias', methods=['POST'])
 @jwt_required()
+# Aquí permitimos que tanto clientes como empleados reporten incidencias
 def reportar_incidencia():
-    current_user_id = get_jwt_identity() # En un sistema real, esto podría ser un empleado
     data = request.get_json()
-    
     nueva_incidencia = Incidencia(
         descripcion=data.get('descripcion'),
         material_id=data.get('material_id'),
-        empleado_id=data.get('empleado_id'), # Opcional: quién la gestiona
+        empleado_id=data.get('empleado_id'),
         fecha=datetime.utcnow().date(),
         estado='pendiente'
     )
-    
     db.session.add(nueva_incidencia)
     db.session.commit()
     return jsonify({"message": "Incidencia reportada con éxito"}), 201
 
 @mantenimiento_bp.route('/incidencias', methods=['GET'])
+@jwt_required()
+@admin_required()
+# Solo los empleados pueden ver la lista completa de incidencias
 def listar_incidencias():
     incidencias = Incidencia.query.all()
     return jsonify([{
@@ -60,3 +88,17 @@ def listar_incidencias():
         "estado": i.estado,
         "fecha": str(i.fecha)
     } for i in incidencias]), 200
+
+@mantenimiento_bp.route('/incidencias/<int:id>', methods=['PUT'])
+@jwt_required()
+@admin_required()
+def actualizar_incidencia(id):
+    incidencia = Incidencia.query.get(id)
+    if not incidencia:
+        return jsonify({"message": "Incidencia no encontrada"}), 404
+    data = request.get_json()
+    incidencia.descripcion = data.get('descripcion', incidencia.descripcion)
+    incidencia.estado = data.get('estado', incidencia.estado)
+    incidencia.empleado_id = data.get('empleado_id', incidencia.empleado_id)
+    db.session.commit()
+    return jsonify({"message": "Incidencia actualizada con éxito"}), 200

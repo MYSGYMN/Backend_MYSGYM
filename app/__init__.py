@@ -26,6 +26,7 @@ def create_app(config_class=Config):
     from app.routes.reservas import reservas_bp
     from app.routes.pagos import pagos_bp
     from app.routes.mantenimiento import mantenimiento_bp
+    from app.routes.empleados import empleados_bp
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(usuarios_bp, url_prefix='/usuarios')
@@ -33,6 +34,7 @@ def create_app(config_class=Config):
     app.register_blueprint(reservas_bp, url_prefix='/reservas')
     app.register_blueprint(pagos_bp, url_prefix='/pagos')
     app.register_blueprint(mantenimiento_bp, url_prefix='/mantenimiento')
+    app.register_blueprint(empleados_bp, url_prefix='/empleados')
 
     @app.route('/')
     def index():
@@ -42,7 +44,8 @@ def create_app(config_class=Config):
             "endpoints": {
                 "auth": "/auth/register, /auth/login",
                 "usuarios": "/usuarios (JWT)",
-                "gym": "/gym/actividades, /gym/salas",
+                "empleados": "/empleados (JWT)",
+                "gym": "/gym/actividades, /gym/salas, /gym/horarios",
                 "reservas": "/reservas (JWT)",
                 "pagos": "/pagos (JWT)",
                 "mantenimiento": "/mantenimiento/materiales, /mantenimiento/incidencias"

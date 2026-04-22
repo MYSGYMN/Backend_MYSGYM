@@ -20,6 +20,7 @@ class Empleado(db.Model):
     nombre = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     rol = db.Column(db.String(50), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False) # Añadido para login
     fecha_contratacion = db.Column(db.Date, default=datetime.utcnow().date)
 
     actividades = db.relationship('Actividad', backref='monitor', lazy=True)
@@ -70,6 +71,7 @@ class Pago(db.Model):
     fecha_pago = db.Column(db.Date, default=datetime.utcnow().date)
     monto = db.Column(db.Numeric(10, 2), nullable=False)
     metodo_pago = db.Column(db.String(50))
+    estado = db.Column(db.String(20), default='Completado')
 
 class Material(db.Model):
     __tablename__ = 'materiales'
