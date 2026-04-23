@@ -5,3 +5,6 @@ Flask-Migrate
 mysql-connector-python
 python-dotenv
 pytest
+pytest-html
+pytest-cov
+pylint

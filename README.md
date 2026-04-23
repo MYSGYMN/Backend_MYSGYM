@@ -2,7 +2,7 @@
 
 Sistema de gestión integral para gimnasios desarrollado con **Python Flask**, **SQLAlchemy** y **MySQL**.
 
-## 🚀 Estructura del Proyecto
+## Estructura del Proyecto
 
 El proyecto sigue un patrón modular utilizando Blueprints para facilitar la escalabilidad:
 
@@ -24,14 +24,14 @@ Backend_MYSGYM/
 └── requirements.txt        # Dependencias del proyecto
 ```
 
-## 🛠️ Tecnologías utilizadas
+## Tecnologías utilizadas
 
 *   **Framework:** Flask
 *   **Base de Datos:** MySQL 8.0 (Dockerizado)
 *   **ORM:** SQLAlchemy + Flask-Migrate
 *   **Seguridad:** Flask-JWT-Extended (Roles: Cliente, Monitor, Admin)
 
-## 📋 Requisitos Previos
+## Requisitos Previos
 
 1.  Tener instalado **Docker** y **Docker Compose**.
 2.  Python 3.12+ (para ejecución local).
@@ -53,6 +53,60 @@ Backend_MYSGYM/
     ```
 
 El servidor estará disponible en `http://localhost:8000`.
+
+## Tests
+## Scripts de Utilidad
+
+El proyecto incluye scripts auxiliares en el folder `scripts/`:
+
+- **[seed_data.py](scripts/seed_data.py)** — Carga datos de prueba iniciales en la BD (salas, empleados, horarios, actividades). Útil para desarrollo local:
+    ```bash
+    .venv/bin/python scripts/seed_data.py
+    ```
+
+## Tests
+
+El proyecto incluye pruebas automatizadas con `pytest` para validar el estado de la base de datos y el flujo de integración.
+
+### Qué cubren
+
+*   La prueba principal de integración en [tests/test_db.py](tests/test_db.py) crea la base de datos desde los modelos y verifica que existan las 9 tablas esperadas.
+*   La configuración de [pytest.ini](pytest.ini) ignora `database/` durante la recolección, evitando errores por archivos internos de MySQL.
+
+### Cómo ejecutarlos
+
+```bash
+.venv/bin/python -m pytest -q
+```
+
+Para generar un reporte HTML detallado:
+
+```bash
+.venv/bin/python -m pytest -q --html=reporte.html
+```
+
+Para medir cobertura de código:
+
+```bash
+.venv/bin/python -m pytest -q --cov=app --cov-report=html --cov-report=term
+```
+
+Para análisis estático de código:
+
+```bash
+.venv/bin/python -m pylint app/ --output-format=parseable
+    pylint app/ --disable=missing-docstring  #para evitar analisis de docstring
+```
+
+### Generación de reportes
+
+El progreso de cada prueba se guarda automáticamente en `test_progress.log` con fecha y hora (hook configurado en [tests/conftest.py](tests/conftest.py)). 
+
+Los reportes HTML se generan en:
+- `reporte.html` — Detalles de ejecución de pruebas
+- `htmlcov/` — Cobertura de código por línea y módulo
+
+Pylint evalúa la calidad del código en `pylint_report.txt` con puntuación y recomendaciones.
 
 ---
 

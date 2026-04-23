@@ -23,3 +23,13 @@ ENV/
 # Flask
 instance/
 .webassets-cache
+
+# Logs de pruebas
+test_progress.log
+reporte.html
+htmlcov/
+.coverage
+pylint_report.txt
+
+# Volumen de BD (Permisos restringidos de Docker/MySQL)
+database/

@@ -292,4 +292,111 @@ Hay algunos puntos importantes que conviene tener presentes al continuar desarro
 - Las validaciones de aforo en reservas son importantes para no sobrepasar la capacidad de una actividad.
 - El sistema ya está preparado para crecer hacia una capa más completa de administración, pero todavía puede ampliarse con validaciones, paginación, pruebas y control más fino de permisos.
 
-Con esta información, cualquier miembro del equipo puede entender la función de la rama Yeremi tanto a nivel conceptual como a nivel de uso real de la API.
+## 14. Tests
+## Scripts de Utilidad
+
+El proyecto incluye scripts auxiliares en el folder `scripts/`:
+
+- **[seed_data.py](scripts/seed_data.py)** — Carga datos de prueba iniciales en la BD (salas, empleados, horarios, actividades). Útil para desarrollo local:
+    ```bash
+    .venv/bin/python scripts/seed_data.py
+    ```
+
+## Tests
+
+El proyecto incluye pruebas automatizadas con `pytest` para validar el estado de la base de datos y el flujo de integración.
+
+### Qué cubren
+
+*   La prueba principal de integración en [tests/test_db.py](tests/test_db.py) crea la base de datos desde los modelos y verifica que existan las 9 tablas esperadas.
+*   La configuración de [pytest.ini](pytest.ini) ignora `database/` durante la recolección, evitando errores por archivos internos de MySQL.
+
+### Cómo ejecutarlos
+
+```bash
+.venv/bin/python -m pytest -q
+```
+
+Para generar un reporte HTML detallado:
+
+```bash
+.venv/bin/python -m pytest -q --html=reporte.html
+```
+
+Para medir cobertura de código:
+
+```bash
+.venv/bin/python -m pytest -q --cov=app --cov-report=html --cov-report=term
+```
+
+Para análisis estático de código:
+
+```bash
+.venv/bin/python -m pylint app/ --output-format=parseable
+```
+
+### Generación de reportes
+
+El progreso de cada prueba se guarda automáticamente en `test_progress.log` con fecha y hora (hook configurado en [tests/conftest.py](tests/conftest.py)). 
+
+Los reportes HTML se generan en:
+- `reporte.html` — Detalles de ejecución de pruebas
+- `htmlcov/` — Cobertura de código por línea y módulo
+
+Pylint evalúa la calidad del código en `pylint_report.txt` con puntuación y recomendaciones.
+
+---
+
+*Desarrollado para el proyecto final de MYSGYM.*
+
+## MYSGYM - Frontend Dashboard
+
+![Versión](https://img.shields.io/badge/version-1.0.0-blue)
+![Licencia](https://img.shields.io/badge/license-MIT-green)
+
+**MYSGYM** es una interfaz premium diseñada para la gestión inteligente de centros de fitness y rutinas de entrenamiento. Este proyecto está construido con tecnologías web puras para garantizar el máximo rendimiento y compatibilidad.
+
+## 🚀 Características Principales
+
+- **Diseño Ultra-Moderno**: Estética Glassmorphism con fondos dinámicos y tipografía optimizada.
+- **Conexión API Flexible**: Estructura modular preparada para integrarse con bases de datos externas.
+- **Interfaz Responsiva**: Adaptable a dispositivos móviles, tablets y escritorio.
+- **Skeleton Loading**: Mejora la experiencia de usuario durante la carga de datos asíncronos.
+
+## 🛠️ Tecnologías Utilizadas
+
+- **HTML5 Semántico**: Para una estructura clara y mejor SEO.
+- **Vanilla CSS**: Sin dependencias externas, con variables CSS para fácil personalización.
+- **JavaScript (ES6+)**: Lógica reactiva y manejo de servicios API.
+- **Google Fonts**: Fuentes 'Outfit' y 'Plus Jakarta Sans'.
+
+## 📁 Estructura del Proyecto
+
+```text
+MYSGYM_FRONT/
+├── assets/          # Recursos multimedia (iconos, imágenes)
+├── css/             # Estilos globales y componentes
+│   └── styles.css
+├── js/              # Lógica de la aplicación
+│   ├── api.js       # Servicio de comunicación con DB externa
+│   └── main.js      # Manipulación del DOM y eventos
+├── index.html       # Punto de entrada principal
+└── README.md        # Documentación
+```
+
+## ⚙️ Configuración de la Base de Datos
+
+Para conectar tu propia base de datos:
+1. Dirígete a `js/api.js`.
+2. Actualiza la `baseUrl` con la URL de tu backend.
+3. Descomenta las líneas de `fetch` en los métodos de la clase `ApiService`.
+
+## 📦 Instalación
+
+No requiere herramientas de compilación. Simplemente clona el repositorio y abre `index.html` en tu navegador.
+
+```bash
+git clone https://github.com/MYSGYMN/MYSGYM_FRONT.git
+```
+
+---
