@@ -23,7 +23,14 @@ ENV/
 # Flask
 instance/
 .webassets-cache
+
+# Logs y Reportes de pruebas
 .coverage
 htmlcov/
 reporte_pruebas.html
+reporte.html
+test_progress.log
+pylint_report.txt
 
+# Volumen de BD (Docker/MySQL)
+# database/ # Comentado por si acaso, pero el remoto lo tenía
