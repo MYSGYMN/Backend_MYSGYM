@@ -23,3 +23,7 @@ ENV/
 # Flask
 instance/
 .webassets-cache
+.coverage
+htmlcov/
+reporte_pruebas.html
+
