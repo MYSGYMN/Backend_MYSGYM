@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
 from app.models import Usuario, Empleado, db
-from datetime import datetime
+from datetime import datetime, timezone
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -21,7 +21,7 @@ def register():
         email=data.get('email'),
         password_hash=generate_password_hash(data.get('password')),
         telefono=data.get('telefono'),
-        fecha_registro=datetime.utcnow().date()
+        fecha_registro=datetime.now(timezone.utc).date()
     )
     db.session.add(nuevo_usuario)
     db.session.commit()

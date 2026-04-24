@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS empleados (
     nombre VARCHAR(100) NOT NULL,
     email VARCHAR(120) NOT NULL UNIQUE,
     rol VARCHAR(50) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
     fecha_contratacion DATE DEFAULT (CURRENT_DATE),
     INDEX (email)
 ) ENGINE=InnoDB;
@@ -76,6 +77,7 @@ CREATE TABLE IF NOT EXISTS pagos (
     fecha_pago DATE DEFAULT (CURRENT_DATE),
     monto DECIMAL(10, 2) NOT NULL,
     metodo_pago VARCHAR(50),
+    estado VARCHAR(20) DEFAULT 'Completado',
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
     INDEX (fecha_pago)
 ) ENGINE=InnoDB;

@@ -37,7 +37,7 @@ def crear_empleado():
 @jwt_required()
 @admin_required()
 def actualizar_empleado(id):
-    empleado = Empleado.query.get(id)
+    empleado = db.session.get(Empleado, id)
     if not empleado:
         return jsonify({"message": "Empleado no encontrado"}), 404
     data = request.get_json()
@@ -51,7 +51,7 @@ def actualizar_empleado(id):
 @jwt_required()
 @admin_required()
 def eliminar_empleado(id):
-    empleado = Empleado.query.get(id)
+    empleado = db.session.get(Empleado, id)
     if not empleado:
         return jsonify({"message": "Empleado no encontrado"}), 404
     db.session.delete(empleado)

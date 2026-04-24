@@ -41,7 +41,7 @@ def create_actividad():
 @jwt_required()
 @admin_required()
 def update_actividad(id):
-    actividad = Actividad.query.get(id)
+    actividad = db.session.get(Actividad, id)
     if not actividad:
         return jsonify({"message": "Actividad no encontrada"}), 404
     data = request.get_json()
@@ -58,7 +58,7 @@ def update_actividad(id):
 @jwt_required()
 @admin_required()
 def delete_actividad(id):
-    actividad = Actividad.query.get(id)
+    actividad = db.session.get(Actividad, id)
     if not actividad:
         return jsonify({"message": "Actividad no encontrada"}), 404
     db.session.delete(actividad)
@@ -93,7 +93,7 @@ def create_sala():
 @jwt_required()
 @admin_required()
 def update_sala(id):
-    sala = Sala.query.get(id)
+    sala = db.session.get(Sala, id)
     if not sala:
         return jsonify({"message": "Sala no encontrada"}), 404
     data = request.get_json()
@@ -106,7 +106,7 @@ def update_sala(id):
 @jwt_required()
 @admin_required()
 def delete_sala(id):
-    sala = Sala.query.get(id)
+    sala = db.session.get(Sala, id)
     if not sala:
         return jsonify({"message": "Sala no encontrada"}), 404
     db.session.delete(sala)

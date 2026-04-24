@@ -44,7 +44,7 @@ def upgrade():
     sa.Column('id_usuario', sa.Integer(), nullable=False),
     sa.Column('nombre', sa.String(length=100), nullable=False),
     sa.Column('email', sa.String(length=120), nullable=False),
-    sa.Column('password', sa.String(length=255), nullable=False),
+    sa.Column('password_hash', sa.String(length=255), nullable=False),
     sa.Column('telefono', sa.String(length=20), nullable=True),
     sa.Column('fecha_registro', sa.Date(), nullable=True),
     sa.Column('estado', sa.String(length=20), nullable=True),
@@ -77,7 +77,7 @@ def upgrade():
     sa.Column('usuario_id', sa.Integer(), nullable=False),
     sa.Column('fecha_pago', sa.Date(), nullable=True),
     sa.Column('monto', sa.Numeric(precision=10, scale=2), nullable=False),
-    sa.Column('metodo', sa.String(length=50), nullable=True),
+    sa.Column('metodo_pago', sa.String(length=50), nullable=True),
     sa.ForeignKeyConstraint(['usuario_id'], ['usuarios.id_usuario'], ),
     sa.PrimaryKeyConstraint('id_pago')
     )

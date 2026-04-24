@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import Pago, Usuario, db
-from datetime import datetime
+from datetime import datetime, timezone
 
 pagos_bp = Blueprint('pagos', __name__)
 
@@ -14,7 +14,7 @@ def registrar_pago():
     nuevo_pago = Pago(
         usuario_id=current_user_id,
         monto=data.get('monto'),
-        fecha_pago=datetime.utcnow(),
+        fecha_pago=datetime.now(timezone.utc).date(),
         metodo_pago=data.get('metodo_pago', 'Tarjeta'),
         estado='Completado'
     )
@@ -41,7 +41,7 @@ def historial_pagos():
 @pagos_bp.route('/<int:id>', methods=['PUT'])
 @jwt_required()
 def actualizar_pago(id):
-    pago = Pago.query.get(id)
+    pago = db.session.get(Pago, id)
     if not pago:
         return jsonify({"message": "Pago no encontrado"}), 404
         
@@ -56,7 +56,7 @@ def actualizar_pago(id):
 @pagos_bp.route('/<int:id>', methods=['DELETE'])
 @jwt_required()
 def eliminar_pago(id):
-    pago = Pago.query.get(id)
+    pago = db.session.get(Pago, id)
     if not pago:
         return jsonify({"message": "Pago no encontrado"}), 404
         

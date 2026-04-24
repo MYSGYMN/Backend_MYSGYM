@@ -4,16 +4,20 @@ from datetime import datetime
 from pathlib import Path
 
 @pytest.fixture
-def app():
+def app(tmp_path):
     """Configuración principal de la aplicación para pruebas."""
-    app = create_app()
-    app.config.update({
-        "TESTING": True,
-        # Usamos SQLite en memoria para no borrar tu base de datos MySQL real
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
-        "SQLALCHEMY_TRACK_MODIFICATIONS": False,
-        "JWT_SECRET_KEY": "test-secret-key"
-    })
+    db_file = tmp_path / "test_testing.db"
+
+    class TestConfig:
+        TESTING = True
+        SQLALCHEMY_DATABASE_URI = f"sqlite:///{db_file}"
+        SQLALCHEMY_TRACK_MODIFICATIONS = False
+        JWT_SECRET_KEY = "clave-super-secreta-para-tests-de-gimnasio-32bytes"
+
+    app = create_app(TestConfig)
+    database_uri = app.config["SQLALCHEMY_DATABASE_URI"]
+    if not database_uri.startswith("sqlite:///"):
+        raise RuntimeError(f"Los tests no pueden ejecutarse contra esta BD: {database_uri}")
 
     # Crear las tablas antes de cada test
     with app.app_context():

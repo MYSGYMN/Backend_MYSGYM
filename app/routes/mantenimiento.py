@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
 from app.models import Material, Incidencia, db
-from datetime import datetime
+from datetime import datetime, timezone
 from app.utils import admin_required
 
 mantenimiento_bp = Blueprint('mantenimiento', __name__)
@@ -36,7 +36,7 @@ def crear_material():
 @jwt_required()
 @admin_required()
 def actualizar_material(id):
-    material = Material.query.get(id)
+    material = db.session.get(Material, id)
     if not material:
         return jsonify({"message": "Material no encontrado"}), 404
     data = request.get_json()
@@ -50,7 +50,7 @@ def actualizar_material(id):
 @jwt_required()
 @admin_required()
 def eliminar_material(id):
-    material = Material.query.get(id)
+    material = db.session.get(Material, id)
     if not material:
         return jsonify({"message": "Material no encontrado"}), 404
     db.session.delete(material)
@@ -68,7 +68,7 @@ def reportar_incidencia():
         descripcion=data.get('descripcion'),
         material_id=data.get('material_id'),
         empleado_id=data.get('empleado_id'),
-        fecha=datetime.utcnow().date(),
+        fecha=datetime.now(timezone.utc).date(),
         estado='pendiente'
     )
     db.session.add(nueva_incidencia)
@@ -93,7 +93,7 @@ def listar_incidencias():
 @jwt_required()
 @admin_required()
 def actualizar_incidencia(id):
-    incidencia = Incidencia.query.get(id)
+    incidencia = db.session.get(Incidencia, id)
     if not incidencia:
         return jsonify({"message": "Incidencia no encontrada"}), 404
     data = request.get_json()

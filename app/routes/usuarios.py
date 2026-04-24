@@ -22,7 +22,7 @@ def get_usuarios():
 @jwt_required()
 def get_perfil():
     current_user_id = get_jwt_identity()
-    usuario = Usuario.query.get(current_user_id)
+    usuario = db.session.get(Usuario, current_user_id)
     
     if not usuario:
         return jsonify({"message": "Usuario no encontrado"}), 404
@@ -48,7 +48,7 @@ def update_usuario(id):
         if get_jwt().get("role") not in ["monitor", "admin"]:
             return jsonify({"message": "No tienes permiso para editar otros perfiles"}), 403
 
-    usuario = Usuario.query.get(id)
+    usuario = db.session.get(Usuario, id)
     if not usuario:
         return jsonify({"message": "Usuario no encontrado"}), 404
         
@@ -64,7 +64,7 @@ def update_usuario(id):
 @jwt_required()
 @admin_required()
 def delete_usuario(id):
-    usuario = Usuario.query.get(id)
+    usuario = db.session.get(Usuario, id)
     if not usuario:
         return jsonify({"message": "Usuario no encontrado"}), 404
         
