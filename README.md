@@ -31,30 +31,82 @@ Backend_MYSGYM/
 *   **ORM:** SQLAlchemy + Flask-Migrate
 *   **Seguridad:** Flask-JWT-Extended (Roles: Cliente, Monitor, Admin)
 
-## Requisitos Previos
+## Requisitos previos
 
-1.  Tener instalado **Docker** y **Docker Compose**.
-2.  Python 3.12+ (para ejecución local).
+Antes de instalar el proyecto, asegúrate de tener:
 
-## ⚡ Instalación Rápida
+- **Python 3.12+**
+- **Docker**
+- **Docker Compose**
+- **Git**
 
-1.  **Levantar Base de Datos**:
-    ```bash
-    docker-compose up -d
-    ```
+## Instalación desde cero
 
-2.  **Configurar Entorno**:
-    Crea un archivo `.env` basado en `.env.example`.
+### 1. Clonar el repositorio
 
-3.  **Ejecutar Servidor**:
-    ```bash
-    source .venv/bin/activate
-    python run.py
-    ```
+```bash
+git clone URL_DEL_REPO
+cd Backend_MYSGYM
+```
+
+### 2. Crear y activar el entorno virtual
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Instalar dependencias
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Crear el archivo `.env`
+
+El archivo `.env` no se sube al repositorio porque contiene configuración local. Crea un archivo llamado `.env` en la raíz del proyecto con este contenido:
+
+```env
+DB_HOST=localhost
+DB_PORT=3307
+DB_USER=root
+DB_PASSWORD=root_password
+DB_NAME=gimnasio
+JWT_SECRET_KEY=super-secret-key
+```
+
+Si usas otros datos de MySQL, modifica esos valores para que coincidan con tu entorno.
+
+### 5. Levantar MySQL con Docker
+
+```bash
+docker-compose up -d
+```
+
+El contenedor de MySQL se expone en el puerto `3307` del ordenador. En una instalación limpia, Docker ejecuta automáticamente [database_schema.sql](database_schema.sql) para crear la base de datos `gimnasio` y sus tablas.
+
+Si ya existía una carpeta `database/` de una ejecución anterior, Docker puede reutilizar datos antiguos y no volver a ejecutar el script SQL. Para reiniciar la base de datos desde cero:
+
+```bash
+docker-compose down
+rm -rf database
+docker-compose up -d
+```
+
+### 6. Ejecutar el backend
+
+```bash
+python run.py
+```
 
 El servidor estará disponible en `http://localhost:8000`.
 
-## Tests
+Puedes comprobar que responde con:
+
+```bash
+curl http://localhost:8000
+```
+
 ## Scripts de Utilidad
 
 El proyecto incluye scripts auxiliares en el folder `scripts/`:
@@ -70,7 +122,7 @@ El proyecto incluye pruebas automatizadas con `pytest` para validar el estado de
 
 ### Qué cubren
 
-*   La prueba principal de integración en [tests/test_db.py](tests/test_db.py) crea la base de datos desde los modelos y verifica que existan las 9 tablas esperadas.
+*   La prueba principal de integración en [tests/test_db.py](tests/test_db.py) usa una base SQLite temporal, crea las tablas desde los modelos y verifica tablas, columnas y claves foráneas importantes.
 *   La configuración de [pytest.ini](pytest.ini) ignora `database/` durante la recolección, evitando errores por archivos internos de MySQL.
 
 ### Cómo ejecutarlos
@@ -95,7 +147,7 @@ Para análisis estático de código:
 
 ```bash
 .venv/bin/python -m pylint app/ --output-format=parseable
-    pylint app/ --disable=missing-docstring  #para evitar analisis de docstring
+.venv/bin/python -m pylint app/ --disable=missing-docstring
 ```
 
 ### Generación de reportes
