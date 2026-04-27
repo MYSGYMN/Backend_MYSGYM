@@ -19,7 +19,7 @@ def admin_header(client):
 @pytest.fixture
 def setup_gym(app):
     """Fixture: crea sala, monitor, horario y actividad base para los tests."""
-    sala = Sala(nombre="Sala Prueba", capacidad=20)
+    sala = Sala(nombre="Sala Prueba", capacidad=10)
     monitor = Empleado(
         nombre="Monitor Gym", email="mon_gym@test.com",
         rol="monitor", password_hash=generate_password_hash("123")
@@ -31,7 +31,7 @@ def setup_gym(app):
     actividad = Actividad(
         nombre="Pilates", descripcion="Clase de pilates",
         monitor_id=monitor.id_empleado, sala_id=sala.id_sala,
-        horario_id=horario.id_horario, aforo_maximo=15
+        horario_id=horario.id_horario, aforo_maximo=10
     )
     db.session.add(actividad)
     db.session.commit()
@@ -89,7 +89,7 @@ def test_get_salas(client):
 
 def test_create_sala(client, admin_header):
     """Prueba crear una sala como admin."""
-    payload = {"nombre": "Sala Cardio", "capacidad": 30}
+    payload = {"nombre": "Sala Cardio", "capacidad": 8}
     response = client.post('/gym/salas', json=payload, headers=admin_header)
     assert response.status_code == 201
 
@@ -97,7 +97,7 @@ def test_update_sala(client, admin_header, setup_gym):
     """Prueba actualizar una sala."""
     response = client.put(
         f'/gym/salas/{setup_gym["sala_id"]}',
-        json={"nombre": "Sala Renovada", "capacidad": 25},
+        json={"nombre": "Sala Renovada", "capacidad": 10},
         headers=admin_header
     )
     assert response.status_code == 200

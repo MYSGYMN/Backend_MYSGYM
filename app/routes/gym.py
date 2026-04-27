@@ -25,13 +25,21 @@ def get_actividades():
 @admin_required()
 def create_actividad():
     data = request.get_json()
+    sala_id = data.get('sala_id')
+    aforo_maximo = data.get('aforo_maximo')
+
+    if sala_id and aforo_maximo:
+        sala = db.session.get(Sala, sala_id)
+        if sala and aforo_maximo > sala.capacidad:
+            return jsonify({"message": f"El aforo máximo ({aforo_maximo}) no puede superar la capacidad de la sala ({sala.capacidad})"}), 400
+
     nueva_actividad = Actividad(
         nombre=data.get('nombre'),
         descripcion=data.get('descripcion'),
         monitor_id=data.get('monitor_id'),
-        sala_id=data.get('sala_id'),
+        sala_id=sala_id,
         horario_id=data.get('horario_id'),
-        aforo_maximo=data.get('aforo_maximo')
+        aforo_maximo=aforo_maximo
     )
     db.session.add(nueva_actividad)
     db.session.commit()
@@ -45,12 +53,21 @@ def update_actividad(id):
     if not actividad:
         return jsonify({"message": "Actividad no encontrada"}), 404
     data = request.get_json()
+
+    nuevo_sala_id = data.get('sala_id', actividad.sala_id)
+    nuevo_aforo_maximo = data.get('aforo_maximo', actividad.aforo_maximo)
+
+    if nuevo_sala_id and nuevo_aforo_maximo is not None:
+        sala = db.session.get(Sala, nuevo_sala_id)
+        if sala and nuevo_aforo_maximo > sala.capacidad:
+            return jsonify({"message": f"El aforo máximo ({nuevo_aforo_maximo}) no puede superar la capacidad de la sala ({sala.capacidad})"}), 400
+
     actividad.nombre = data.get('nombre', actividad.nombre)
     actividad.descripcion = data.get('descripcion', actividad.descripcion)
     actividad.monitor_id = data.get('monitor_id', actividad.monitor_id)
-    actividad.sala_id = data.get('sala_id', actividad.sala_id)
+    actividad.sala_id = nuevo_sala_id
     actividad.horario_id = data.get('horario_id', actividad.horario_id)
-    actividad.aforo_maximo = data.get('aforo_maximo', actividad.aforo_maximo)
+    actividad.aforo_maximo = nuevo_aforo_maximo
     db.session.commit()
     return jsonify({"message": "Actividad actualizada con éxito"}), 200
 
@@ -81,9 +98,14 @@ def get_salas():
 @admin_required()
 def create_sala():
     data = request.get_json()
+    capacidad = data.get('capacidad')
+    
+    if capacidad is not None and capacidad > 10:
+        return jsonify({"message": "La capacidad máxima de una sala no puede exceder las 10 personas"}), 400
+
     nueva_sala = Sala(
         nombre=data.get('nombre'),
-        capacidad=data.get('capacidad')
+        capacidad=capacidad
     )
     db.session.add(nueva_sala)
     db.session.commit()
@@ -97,8 +119,19 @@ def update_sala(id):
     if not sala:
         return jsonify({"message": "Sala no encontrada"}), 404
     data = request.get_json()
+    
+    nueva_capacidad = data.get('capacidad')
+    if nueva_capacidad is not None:
+        if nueva_capacidad > 10:
+            return jsonify({"message": "La capacidad máxima de una sala no puede exceder las 10 personas"}), 400
+        if nueva_capacidad < sala.capacidad:
+            actividades_superan = Actividad.query.filter(Actividad.sala_id == id, Actividad.aforo_maximo > nueva_capacidad).first()
+            if actividades_superan:
+                return jsonify({"message": f"No se puede reducir la capacidad a {nueva_capacidad}. La actividad '{actividades_superan.nombre}' tiene un aforo máximo de {actividades_superan.aforo_maximo}."}), 400
+
     sala.nombre = data.get('nombre', sala.nombre)
-    sala.capacidad = data.get('capacidad', sala.capacidad)
+    if nueva_capacidad is not None:
+        sala.capacidad = nueva_capacidad
     db.session.commit()
     return jsonify({"message": "Sala actualizada con éxito"}), 200
 

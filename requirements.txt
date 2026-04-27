@@ -6,6 +6,4 @@ Flask-Cors
 mysql-connector-python
 python-dotenv
 pytest
-pytest-html
 pytest-cov
-pylint
