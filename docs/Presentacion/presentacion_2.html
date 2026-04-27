@@ -29,6 +29,8 @@
     .slide {
       position: absolute;
       inset: 0;
+      box-sizing: border-box;
+      padding-bottom: 72px;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.25s ease-in-out;
@@ -76,6 +78,13 @@
     .controls button {
       background: #1d4ed8;
       color: #fff;
+    }
+
+    #prevBtn,
+    #nextBtn,
+    #fullscreenBtn {
+      padding: 6px 10px;
+      font-size: 12px;
     }
 
     .controls button:hover {
