@@ -1,6 +1,19 @@
 import pytest
 
 @pytest.fixture
+def admin_header(client):
+    """Fixture: registra y loguea un empleado con rol admin."""
+    client.post('/auth/register-empleado', json={
+        "nombre": "Admin Pago", "email": "admin_pago@test.com",
+        "password": "123", "rol": "admin"
+    })
+    response = client.post('/auth/login-empleado', json={
+        "email": "admin_pago@test.com", "password": "123"
+    })
+    token = response.get_json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}
+
+@pytest.fixture
 def user_header(client):
     """Fixture: registra y loguea un usuario cliente."""
     client.post('/auth/register', json={
@@ -29,6 +42,15 @@ def test_historial_pagos(client, user_header, pago_id):
     response = client.get('/pagos/historial', headers=user_header)
     assert response.status_code == 200
     assert len(response.get_json()) >= 1
+
+def test_listar_pagos_admin(client, user_header, admin_header):
+    """Prueba listar pagos desde el panel de administración."""
+    client.post('/pagos/', json={"monto": 50.0, "metodo_pago": "Tarjeta"}, headers=user_header)
+    response = client.get('/pagos/', headers=admin_header)
+    assert response.status_code == 200
+    data = response.get_json()
+    assert isinstance(data, list)
+    assert data and "usuario" in data[0]
 
 def test_actualizar_pago(client, user_header, pago_id):
     """Prueba actualizar un pago existente."""

@@ -15,6 +15,7 @@ def get_actividades():
         "nombre": a.nombre,
         "descripcion": a.descripcion,
         "aforo_maximo": a.aforo_maximo,
+        "reservas_count": len(a.reservas),
         "sala": a.sala.nombre if a.sala else None,
         "monitor": a.monitor.nombre if a.monitor else None,
         "horario": f"{a.horario.dia_semana} {a.horario.hora_inicio}-{a.horario.hora_fin}" if a.horario else None
@@ -25,13 +26,17 @@ def get_actividades():
 @admin_required()
 def create_actividad():
     data = request.get_json()
+    aforo = data.get('aforo_maximo', 10)
+    if aforo is not None and aforo > 10:
+        aforo = 10
+        
     nueva_actividad = Actividad(
         nombre=data.get('nombre'),
         descripcion=data.get('descripcion'),
         monitor_id=data.get('monitor_id'),
         sala_id=data.get('sala_id'),
         horario_id=data.get('horario_id'),
-        aforo_maximo=data.get('aforo_maximo')
+        aforo_maximo=aforo
     )
     db.session.add(nueva_actividad)
     db.session.commit()
@@ -50,7 +55,12 @@ def update_actividad(id):
     actividad.monitor_id = data.get('monitor_id', actividad.monitor_id)
     actividad.sala_id = data.get('sala_id', actividad.sala_id)
     actividad.horario_id = data.get('horario_id', actividad.horario_id)
-    actividad.aforo_maximo = data.get('aforo_maximo', actividad.aforo_maximo)
+    
+    aforo = data.get('aforo_maximo', actividad.aforo_maximo)
+    if aforo is not None and aforo > 10:
+        aforo = 10
+    actividad.aforo_maximo = aforo
+    
     db.session.commit()
     return jsonify({"message": "Actividad actualizada con éxito"}), 200
 
@@ -81,9 +91,13 @@ def get_salas():
 @admin_required()
 def create_sala():
     data = request.get_json()
+    capacidad = data.get('capacidad', 10)
+    if capacidad is not None and capacidad > 10:
+        capacidad = 10
+        
     nueva_sala = Sala(
         nombre=data.get('nombre'),
-        capacidad=data.get('capacidad')
+        capacidad=capacidad
     )
     db.session.add(nueva_sala)
     db.session.commit()
@@ -98,7 +112,10 @@ def update_sala(id):
         return jsonify({"message": "Sala no encontrada"}), 404
     data = request.get_json()
     sala.nombre = data.get('nombre', sala.nombre)
-    sala.capacidad = data.get('capacidad', sala.capacidad)
+    capacidad = data.get('capacidad', sala.capacidad)
+    if capacidad is not None and capacidad > 10:
+        capacidad = 10
+    sala.capacidad = capacidad
     db.session.commit()
     return jsonify({"message": "Sala actualizada con éxito"}), 200
 
@@ -139,3 +156,35 @@ def create_horario():
     db.session.add(nuevo_horario)
     db.session.commit()
     return jsonify({"message": "Horario creado con éxito"}), 201
+
+@gym_bp.route('/horarios/<int:id>', methods=['PUT'])
+@jwt_required()
+@admin_required()
+def update_horario(id):
+    horario = db.session.get(Horario, id)
+    if not horario:
+        return jsonify({"message": "Horario no encontrado"}), 404
+
+    data = request.get_json()
+    from datetime import datetime
+
+    horario.dia_semana = data.get('dia_semana', horario.dia_semana)
+    if data.get('hora_inicio'):
+        horario.hora_inicio = datetime.strptime(data.get('hora_inicio'), '%H:%M').time()
+    if data.get('hora_fin'):
+        horario.hora_fin = datetime.strptime(data.get('hora_fin'), '%H:%M').time()
+
+    db.session.commit()
+    return jsonify({"message": "Horario actualizado con éxito"}), 200
+
+@gym_bp.route('/horarios/<int:id>', methods=['DELETE'])
+@jwt_required()
+@admin_required()
+def delete_horario(id):
+    horario = db.session.get(Horario, id)
+    if not horario:
+        return jsonify({"message": "Horario no encontrado"}), 404
+
+    db.session.delete(horario)
+    db.session.commit()
+    return jsonify({"message": "Horario eliminado con éxito"}), 200

@@ -4,6 +4,19 @@ from app.models import Sala, Empleado, Actividad, Horario, Reserva, db
 from datetime import time
 
 @pytest.fixture
+def admin_header(client):
+    """Fixture para obtener un token de admin."""
+    client.post('/auth/register-empleado', json={
+        "nombre": "Admin Reserva", "email": "admin_reserva@test.com",
+        "password": "123", "rol": "admin"
+    })
+    response = client.post('/auth/login-empleado', json={
+        "email": "admin_reserva@test.com", "password": "123"
+    })
+    token = response.get_json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}
+
+@pytest.fixture
 def auth_header(client):
     """Fixture para obtener el token de autenticación."""
     email = "reserva@test.com"
@@ -69,3 +82,11 @@ def test_cancelar_reserva(client, auth_header, setup_actividad):
     response = client.delete(f'/reservas/{res_id}', headers=auth_header)
     assert response.status_code == 200
 
+def test_listar_reservas_admin(client, admin_header, auth_header, setup_actividad):
+    """Prueba listar reservas desde el panel de administración."""
+    client.post('/reservas', json={"actividad_id": setup_actividad}, headers=auth_header)
+    response = client.get('/reservas/', headers=admin_header)
+    assert response.status_code == 200
+    data = response.get_json()
+    assert isinstance(data, list)
+    assert data and "usuario" in data[0]

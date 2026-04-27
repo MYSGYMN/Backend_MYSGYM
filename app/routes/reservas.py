@@ -1,11 +1,12 @@
 from datetime import datetime, timezone
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from app.models import Reserva, Actividad, db
 
 reservas_bp = Blueprint('reservas', __name__)
 
 @reservas_bp.route('', methods=['POST'])
+@reservas_bp.route('/', methods=['POST'])
 @jwt_required()
 def crear_reserva():
     current_user_id = get_jwt_identity()
@@ -36,6 +37,26 @@ def crear_reserva():
 
     return jsonify({"message": "Reserva realizada con éxito"}), 201
 
+@reservas_bp.route('', methods=['GET'])
+@reservas_bp.route('/', methods=['GET'])
+@jwt_required()
+def listar_reservas():
+    current_user_id = get_jwt_identity()
+    role = get_jwt().get("role")
+
+    if role in {"admin", "monitor"}:
+        reservas = Reserva.query.all()
+    else:
+        reservas = Reserva.query.filter_by(usuario_id=current_user_id).all()
+
+    return jsonify([{
+        "id_reserva": r.id_reserva,
+        "usuario": r.usuario.nombre if r.usuario else None,
+        "actividad": r.actividad.nombre if r.actividad else None,
+        "fecha": str(r.fecha_reserva),
+        "estado": r.estado,
+    } for r in reservas]), 200
+
 @reservas_bp.route('/mis-reservas', methods=['GET'])
 @jwt_required()
 def listar_mis_reservas():
@@ -53,12 +74,13 @@ def listar_mis_reservas():
 @jwt_required()
 def cancelar_reserva(reserva_id):
     current_user_id = get_jwt_identity()
+    role = get_jwt().get("role")
     reserva = db.session.get(Reserva, reserva_id)
 
     if not reserva:
         return jsonify({"message": "Reserva no encontrada"}), 404
 
-    if str(reserva.usuario_id) != str(current_user_id):
+    if role not in {"admin", "monitor"} and str(reserva.usuario_id) != str(current_user_id):
         return jsonify({"message": "No tienes permiso para cancelar esta reserva"}), 403
 
     db.session.delete(reserva)
@@ -69,10 +91,14 @@ def cancelar_reserva(reserva_id):
 @reservas_bp.route('/<int:reserva_id>', methods=['PUT'])
 @jwt_required()
 def actualizar_estado_reserva(reserva_id):
-    # Esto sería útil para un admin o monitor
+    current_user_id = get_jwt_identity()
+    role = get_jwt().get("role")
     reserva = db.session.get(Reserva, reserva_id)
     if not reserva:
         return jsonify({"message": "Reserva no encontrada"}), 404
+
+    if role not in {"admin", "monitor"} and str(reserva.usuario_id) != str(current_user_id):
+        return jsonify({"message": "No tienes permiso para actualizar esta reserva"}), 403
 
     data = request.get_json()
     reserva.estado = data.get('estado', reserva.estado)

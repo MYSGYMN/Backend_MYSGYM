@@ -124,3 +124,19 @@ def test_create_horario(client, admin_header):
     payload = {"dia_semana": "Viernes", "hora_inicio": "18:00", "hora_fin": "19:00"}
     response = client.post('/gym/horarios', json=payload, headers=admin_header)
     assert response.status_code == 201
+
+def test_update_and_delete_horario(client, admin_header, setup_gym):
+    """Prueba actualizar y eliminar un horario existente."""
+    payload = {"dia_semana": "Miercoles", "hora_inicio": "10:30", "hora_fin": "11:30"}
+    response = client.put(
+        f'/gym/horarios/{setup_gym["horario_id"]}',
+        json=payload,
+        headers=admin_header
+    )
+    assert response.status_code == 200
+
+    response = client.delete(
+        f'/gym/horarios/{setup_gym["horario_id"]}',
+        headers=admin_header
+    )
+    assert response.status_code == 200
