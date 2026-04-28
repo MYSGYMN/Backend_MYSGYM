@@ -1,3 +1,6 @@
+# Link con Diagrama de Arquitectura de DDBB
+https://www.drawdb.app/editor?shareId=cf496fe26d688d6b4b845e8a1bf9c465
+
 # Instalar MySQL en Linux Mint
 
 1. Actualizar el sistema

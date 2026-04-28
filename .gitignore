@@ -33,4 +33,4 @@ test_progress.log
 pylint_report.txt
 
 # Volumen de BD (Docker/MySQL)
-# database/ # Comentado por si acaso, pero el remoto lo tenía
+database/
