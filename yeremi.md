@@ -400,3 +400,10 @@ git clone https://github.com/MYSGYMN/MYSGYM_FRONT.git
 ```
 
 ---
+
+Usa estas rutas en Postman contra la API, no contra MySQL:
+
+POST http://127.0.0.1:8000/auth/register
+POST http://127.0.0.1:8000/auth/login
+POST http://127.0.0.1:8000/auth/register-empleado
+POST http://127.0.0.1:8000/auth/login-empleado
