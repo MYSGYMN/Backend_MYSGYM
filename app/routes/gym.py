@@ -16,8 +16,11 @@ def get_actividades():
         "descripcion": a.descripcion,
         "aforo_maximo": a.aforo_maximo,
         "sala": a.sala.nombre if a.sala else None,
+        "sala_id": a.sala_id,
         "monitor": a.monitor.nombre if a.monitor else None,
-        "horario": f"{a.horario.dia_semana} {a.horario.hora_inicio}-{a.horario.hora_fin}" if a.horario else None
+        "monitor_id": a.monitor_id,
+        "horario": f"{a.horario.dia_semana} {a.horario.hora_inicio}-{a.horario.hora_fin}" if a.horario else None,
+        "horario_id": a.horario_id
     } for a in actividades]), 200
 
 @gym_bp.route('/actividades', methods=['POST'])
