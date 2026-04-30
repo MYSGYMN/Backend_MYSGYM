@@ -15,7 +15,8 @@ def get_materiales():
         "id_material": m.id_material,
         "nombre": m.nombre,
         "estado": m.estado,
-        "sala": m.sala.nombre if m.sala else "General"
+        "sala": m.sala.nombre if m.sala else "General",
+        "sala_id": m.sala_id
     } for m in materiales]), 200
 
 @mantenimiento_bp.route('/materiales', methods=['POST'])
@@ -85,6 +86,9 @@ def listar_incidencias():
         "id_incidencia": i.id_incidencia,
         "descripcion": i.descripcion,
         "material": i.material.nombre if i.material else "Desconocido",
+        "material_id": i.material_id,
+        "empleado": i.empleado.nombre if i.empleado else "Sin asignar",
+        "empleado_id": i.empleado_id,
         "estado": i.estado,
         "fecha": str(i.fecha)
     } for i in incidencias]), 200

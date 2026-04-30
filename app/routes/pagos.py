@@ -24,6 +24,20 @@ def registrar_pago():
     
     return jsonify({"message": "Pago registrado correctamente"}), 201
 
+@pagos_bp.route('', methods=['GET'])
+@jwt_required()
+def get_todos_los_pagos():
+    pagos = Pago.query.all()
+    return jsonify([{
+        "id_pago": p.id_pago,
+        "usuario": p.usuario.nombre if p.usuario else None,
+        "usuario_id": p.usuario_id,
+        "fecha_pago": p.fecha_pago.isoformat(),
+        "monto": float(p.monto),
+        "metodo": p.metodo_pago,
+        "estado": p.estado
+    } for p in pagos]), 200
+
 @pagos_bp.route('/historial', methods=['GET'])
 @jwt_required()
 def historial_pagos():

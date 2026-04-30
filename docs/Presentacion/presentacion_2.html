@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MYSGYM - Sistema de Gestion Integral para Gimnasios</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Arial, sans-serif;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0f172a;
+    }
+
+    .presentation {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: #0f172a;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      box-sizing: border-box;
+      padding-bottom: 72px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease-in-out;
+      background: #fff;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .slide img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+      object-fit: contain;
+    }
+
+    .controls {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.82);
+      color: #e2e8f0;
+      backdrop-filter: blur(8px);
+    }
+
+    .controls button,
+    .controls select {
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .controls button {
+      background: #1d4ed8;
+      color: #fff;
+    }
+
+    #prevBtn,
+    #nextBtn,
+    #fullscreenBtn {
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+
+    .controls button:hover {
+      background: #2563eb;
+    }
+
+    .controls select {
+      background: #334155;
+      color: #fff;
+      padding: 8px 10px;
+    }
+
+    .counter {
+      min-width: 64px;
+      text-align: center;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <main class="presentation" aria-label="Presentacion MYSGYM">
+    <section class="slide active" aria-label="Diapositiva 1">
+      <img src="https://skyagent-artifacts.skywork.ai/image/2047275254267637760/d52cc06c-375c-4f68-acc8-156742bee8a4/prod_agent_2047275254267637760/ppt_nano_2047275267905986560_1.png" alt="Diapositiva 1 MYSGYM"/>
+    </section>
+    <section class="slide" aria-label="Diapositiva 2">
+      <img src="https://skyagent-artifacts.skywork.ai/image/2047275254267637760/e42b542a-e127-4e7e-b4a7-7405dd56ddac/prod_agent_2047275254267637760/ppt_nano_2047275267905986560_1.png" alt="Diapositiva 2 MYSGYM"/>
+    </section>
+    <section class="slide" aria-label="Diapositiva 3">
+      <img src="https://skyagent-artifacts.skywork.ai/image/2047275254267637760/4ab27aee-5e50-4d58-84a4-1e42c2bf7a04/prod_agent_2047275254267637760/ppt_nano_2047275267905986560_1.png" alt="Diapositiva 3 MYSGYM"/>
+    </section>
+    <section class="slide" aria-label="Diapositiva 4">
+      <img src="https://skyagent-artifacts.skywork.ai/image/2047275254267637760/377c60f4-bdbc-472c-957f-645242f433ca/prod_agent_2047275254267637760/ppt_nano_2047275267905986560_1.png" alt="Diapositiva 4 MYSGYM"/>
+    </section>
+    <section class="slide" aria-label="Diapositiva 5">
+      <img src="https://skyagent-artifacts.skywork.ai/image/2047275254267637760/6cf36738-d353-4d3f-9c96-b20a6049170f/prod_agent_2047275254267637760/ppt_nano_2047275267905986560_1.png" alt="Diapositiva 5 MYSGYM"/>
+    </section>
+    <section class="slide" aria-label="Diapositiva 6">
+      <img src="https://skyagent-artifacts.skywork.ai/image/2047275254267637760/92515af2-3d9a-44df-a8e5-227bc4f3effc/prod_agent_2047275254267637760/ppt_nano_2047275267905986560_1.png" alt="Diapositiva 6 MYSGYM"/>
+    </section>
+    <section class="slide" aria-label="Diapositiva 7">
+      <img src="https://skyagent-artifacts.skywork.ai/image/2047275254267637760/84137283-f333-4b03-9ada-37dbf45bfb2f/prod_agent_2047275254267637760/ppt_nano_2047275267905986560_1.png" alt="Diapositiva 7 MYSGYM"/>
+    </section>
+    <section class="slide" aria-label="Diapositiva 8">
+      <img src="https://skyagent-artifacts.skywork.ai/image/2047275254267637760/24428a39-b9e8-40e1-a2b8-60562747971a/prod_agent_2047275254267637760/ppt_nano_2047275267905986560_1.png" alt="Diapositiva 8 MYSGYM"/>
+    </section>
+  </main>
+
+  <div class="controls" role="group" aria-label="Controles de presentacion">
+    <button type="button" id="prevBtn">Anterior</button>
+    <div class="counter" id="counter">1 / 8</div>
+    <button type="button" id="nextBtn">Siguiente</button>
+    <select id="intervalSelect" aria-label="Intervalo de autoplay">
+      <option value="3000">3s</option>
+      <option value="5000" selected>5s</option>
+      <option value="8000">8s</option>
+      <option value="10000">10s</option>
+    </select>
+    <button type="button" id="autoplayBtn" aria-pressed="false">Iniciar autoplay</button>
+    <button type="button" id="fullscreenBtn">Pantalla completa</button>
+  </div>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const counter = document.getElementById('counter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const intervalSelect = document.getElementById('intervalSelect');
+    const autoplayBtn = document.getElementById('autoplayBtn');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    let currentIndex = 0;
+    let autoplayTimer = null;
+
+    function showSlide(index) {
+      currentIndex = (index + slides.length) % slides.length;
+      slides.forEach((slide, slideIndex) => {
+        slide.classList.toggle('active', slideIndex === currentIndex);
+      });
+      counter.textContent = `${currentIndex + 1} / ${slides.length}`;
+    }
+
+    function startAutoplay() {
+      stopAutoplay();
+      const delay = Number(intervalSelect.value);
+      autoplayTimer = setInterval(() => {
+        showSlide(currentIndex + 1);
+      }, delay);
+      autoplayBtn.textContent = 'Pausar autoplay';
+      autoplayBtn.setAttribute('aria-pressed', 'true');
+    }
+
+    function stopAutoplay() {
+      if (autoplayTimer) {
+        clearInterval(autoplayTimer);
+        autoplayTimer = null;
+      }
+      autoplayBtn.textContent = 'Iniciar autoplay';
+      autoplayBtn.setAttribute('aria-pressed', 'false');
+    }
+
+    async function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    }
+
+    prevBtn.addEventListener('click', () => showSlide(currentIndex - 1));
+    nextBtn.addEventListener('click', () => showSlide(currentIndex + 1));
+
+    autoplayBtn.addEventListener('click', () => {
+      if (autoplayTimer) {
+        stopAutoplay();
+      } else {
+        startAutoplay();
+      }
+    });
+
+    intervalSelect.addEventListener('change', () => {
+      if (autoplayTimer) {
+        startAutoplay();
+      }
+    });
+
+    fullscreenBtn.addEventListener('click', () => {
+      toggleFullscreen();
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      fullscreenBtn.textContent = document.fullscreenElement
+        ? 'Salir pantalla completa'
+        : 'Pantalla completa';
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') {
+        showSlide(currentIndex - 1);
+      }
+
+      if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') {
+        event.preventDefault();
+        showSlide(currentIndex + 1);
+      }
+
+      if (event.key.toLowerCase() === 'f') {
+        toggleFullscreen();
+      }
+
+      if (event.key.toLowerCase() === 'a') {
+        autoplayBtn.click();
+      }
+    });
+  </script>
+</body>
+</html>

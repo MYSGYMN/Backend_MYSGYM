@@ -36,6 +36,30 @@ def crear_reserva():
 
     return jsonify({"message": "Reserva realizada con éxito"}), 201
 
+@reservas_bp.route('', methods=['GET'])
+@jwt_required()
+def get_todas_las_reservas():
+    from flask_jwt_extended import get_jwt
+    claims = get_jwt()
+    current_user_id = get_jwt_identity()
+    
+    if claims.get("role") in ["admin", "monitor"]:
+        reservas = Reserva.query.all()
+    else:
+        reservas = Reserva.query.filter_by(usuario_id=current_user_id).all()
+        
+    return jsonify([{
+        "id_reserva": r.id_reserva,
+        "usuario": r.usuario.nombre if r.usuario else None,
+        "usuario_id": r.usuario_id,
+        "actividad": r.actividad.nombre if r.actividad else None,
+        "actividad_id": r.actividad_id,
+        "sala": r.actividad.sala.nombre if r.actividad and r.actividad.sala else None,
+        "horario": f"{r.actividad.horario.dia_semana} {r.actividad.horario.hora_inicio}-{r.actividad.horario.hora_fin}" if r.actividad and r.actividad.horario else None,
+        "fecha_reserva": r.fecha_reserva.isoformat() if r.fecha_reserva else None,
+        "estado": r.estado
+    } for r in reservas]), 200
+
 @reservas_bp.route('/mis-reservas', methods=['GET'])
 @jwt_required()
 def listar_mis_reservas():
@@ -44,7 +68,10 @@ def listar_mis_reservas():
 
     return jsonify([{
         "id_reserva": r.id_reserva,
-        "actividad": r.actividad.nombre,
+        "actividad": r.actividad.nombre if r.actividad else None,
+        "actividad_id": r.actividad_id,
+        "sala": r.actividad.sala.nombre if r.actividad and r.actividad.sala else None,
+        "horario": f"{r.actividad.horario.dia_semana} {r.actividad.horario.hora_inicio}-{r.actividad.horario.hora_fin}" if r.actividad and r.actividad.horario else None,
         "fecha": str(r.fecha_reserva),
         "estado": r.estado
     } for r in reservas]), 200

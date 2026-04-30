@@ -40,32 +40,26 @@ Antes de instalar el proyecto, asegúrate de tener:
 - **Docker Compose**
 - **Git**
 
-## Instalación desde cero
+## Instalación paso a paso
+
+Sigue estos pasos para configurar el proyecto en un ordenador nuevo desde cero:
 
 ### 1. Clonar el repositorio
-
+Abre una terminal y descarga el código:
 ```bash
-git clone URL_DEL_REPO
+git clone <URL_DEL_REPO>
 cd Backend_MYSGYM
 ```
 
-### 2. Crear y activar el entorno virtual
-
+### 2. Levantar la Base de Datos (Docker)
+Este paso creará el contenedor de MySQL y ejecutará automáticamente el esquema inicial de tablas.
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
+docker-compose up -d
 ```
+*La base de datos estará disponible en `localhost:3307`.*
 
-### 3. Instalar dependencias
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Crear el archivo `.env`
-
-El archivo `.env` no se sube al repositorio porque contiene configuración local. Crea un archivo llamado `.env` en la raíz del proyecto con este contenido:
-
+### 3. Configurar Variables de Entorno
+Crea un archivo llamado `.env` en la raíz del proyecto con el siguiente contenido base:
 ```env
 DB_HOST=localhost
 DB_PORT=3307
@@ -75,46 +69,42 @@ DB_NAME=gimnasio
 JWT_SECRET_KEY=super-secret-key
 ```
 
-Si usas otros datos de MySQL, modifica esos valores para que coincidan con tu entorno.
-
-### 5. Levantar MySQL con Docker
-
-```bash
-docker-compose up -d
+### 4. Crear y activar el entorno virtual
+**En Windows:**
+```powershell
+python -m venv .venv
+.\.venv\Scripts\activate
 ```
 
-El contenedor de MySQL se expone en el puerto `3307` del ordenador. En una instalación limpia, Docker ejecuta automáticamente [database_schema.sql](database_schema.sql) para crear la base de datos `gimnasio` y sus tablas.
-
-Si ya existía una carpeta `database/` de una ejecución anterior, Docker puede reutilizar datos antiguos y no volver a ejecutar el script SQL. Para reiniciar la base de datos desde cero:
-
+**En macOS/Linux:**
 ```bash
-docker-compose down
-rm -rf database
-docker-compose up -d
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
-### 6. Ejecutar el backend
+### 5. Instalar dependencias
+```bash
+pip install -r requirements.txt
+```
 
+### 6. Cargar datos de prueba (Opcional)
+Para insertar datos iniciales (salas, empleados, actividades) en la base de datos:
+```bash
+python seed_db.py
+```
+
+### 7. Ejecutar el backend
 ```bash
 python run.py
 ```
-
 El servidor estará disponible en `http://localhost:8000`.
 
-Puedes comprobar que responde con:
-
-```bash
-curl http://localhost:8000
-```
+---
 
 ## Scripts de Utilidad
 
-El proyecto incluye scripts auxiliares en el folder `scripts/`:
-
-- **[seed_data.py](scripts/seed_data.py)** — Carga datos de prueba iniciales en la BD (salas, empleados, horarios, actividades). Útil para desarrollo local:
-    ```bash
-    .venv/bin/python scripts/seed_data.py
-    ```
+- **[seed_db.py](seed_db.py)**: Script principal para poblar la base de datos con información didáctica inicial.
+- **[database_schema.sql](database_schema.sql)**: Esquema completo de la base de datos (se ejecuta automáticamente en el primer `docker-compose up`).
 
 ## Tests
 
