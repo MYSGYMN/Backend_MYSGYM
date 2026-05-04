@@ -1,6 +1,8 @@
 import sys
 import os
+import time
 from datetime import datetime, time
+from sqlalchemy.exc import OperationalError
 
 # Add the Backend path to sys.path so we can import the app
 # Add repository root to sys.path (avoid hard-coded absolute paths)
@@ -15,6 +17,20 @@ from werkzeug.security import generate_password_hash
 app = create_app()
 
 with app.app_context():
+    # Esperar a que la base de datos esté lista (reintentos)
+    max_retries = 10
+    for attempt in range(1, max_retries + 1):
+        try:
+            conn = db.engine.connect()
+            conn.close()
+            break
+        except Exception as e:
+            if attempt == max_retries:
+                print(f"DB connection failed after {max_retries} attempts: {e}")
+                raise
+            print(f"DB not ready, retrying in 3s... ({attempt}/{max_retries})")
+            time.sleep(3)
+
     print("Iniciando la inserción de datos base didácticos...")
 
     # 1. Crear Salas
