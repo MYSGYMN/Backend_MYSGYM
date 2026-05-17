@@ -28,6 +28,9 @@ def create_app(config_class=Config):
     with app.app_context():
         from . import models
 
+    from .frontend_ui import register_frontend_routes
+    register_frontend_routes(app)
+
     # Registro de Blueprints
     from app.routes.auth import auth_bp
     from app.routes.usuarios import usuarios_bp
@@ -45,8 +48,8 @@ def create_app(config_class=Config):
     app.register_blueprint(mantenimiento_bp, url_prefix='/mantenimiento')
     app.register_blueprint(empleados_bp, url_prefix='/empleados')
 
-    @app.route('/')
-    def index():
+    @app.route('/api')
+    def api_index():
         return {
             "status": "success",
             "message": "Bienvenido a la API de MYSGYM",
