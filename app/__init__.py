@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -13,10 +15,15 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
+    frontend_origin = os.environ.get("FRONTEND_ORIGIN", "").strip()
+
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
-    CORS(app)
+    if frontend_origin:
+        CORS(app, origins=[frontend_origin])
+    else:
+        CORS(app, origins=[r"https://.*\.onrender\.com", r"http://localhost:.*", r"http://127\.0\.0\.1:.*"])
 
     with app.app_context():
         from . import models

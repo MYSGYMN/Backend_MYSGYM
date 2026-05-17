@@ -51,12 +51,14 @@ git clone <URL_DEL_REPO>
 cd Backend_MYSGYM
 ```
 
-### 2. Levantar la Base de Datos (Docker)
-Este paso creará el contenedor de MySQL y ejecutará automáticamente el esquema inicial de tablas.
+### 2. Levantar la Base de Datos (local)
+Si trabajas en tu equipo, puedes usar MySQL con Docker como hasta ahora:
 ```bash
 docker-compose up -d
 ```
 *La base de datos estará disponible en `localhost:3307`.*
+
+En Render, el backend usa una base gestionada de PostgreSQL y recibe su conexión desde `DATABASE_URL`.
 
 ### 3. Configurar Variables de Entorno
 Crea un archivo llamado `.env` en la raíz del proyecto con el siguiente contenido base:
@@ -68,6 +70,8 @@ DB_PASSWORD=root_password
 DB_NAME=gimnasio
 JWT_SECRET_KEY=super-secret-key
 ```
+
+Si despliegas en Render, no necesitas definir `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` ni `DB_NAME` si `DATABASE_URL` ya está presente.
 
 ### 4. Crear y activar el entorno virtual
 **En Windows:**
