@@ -20,7 +20,7 @@ Backend_MYSGYM/
 ├── tests/                  # Pruebas unitarias y de integración
 ├── database_schema.sql     # Script SQL completo de la DB
 ├── docker-compose.yml      # Orquestación de contenedores
-├── run.py                  # Punto de entrada de la aplicación
+├── app.py                  # Punto de entrada de la aplicación
 └── requirements.txt        # Dependencias del proyecto
 ```
 
@@ -58,7 +58,7 @@ docker-compose up -d
 ```
 *La base de datos estará disponible en `localhost:3307`.*
 
-En Render, el backend usa una base gestionada de PostgreSQL y recibe su conexión desde `DATABASE_URL`.
+En Render, el backend puede usar una base externa de PostgreSQL y recibe su conexión desde `DATABASE_URL`.
 
 ### 3. Configurar Variables de Entorno
 Crea un archivo llamado `.env` en la raíz del proyecto con el siguiente contenido base:
@@ -99,7 +99,7 @@ python seed_db.py
 
 ### 7. Ejecutar el backend
 ```bash
-python run.py
+python app.py
 ```
 El servidor estará disponible en `http://localhost:8000`.
 
@@ -109,6 +109,21 @@ El servidor estará disponible en `http://localhost:8000`.
 
 - **[seed_db.py](seed_db.py)**: Script principal para poblar la base de datos con información didáctica inicial.
 - **[database_schema.sql](database_schema.sql)**: Esquema completo de la base de datos (se ejecuta automáticamente en el primer `docker-compose up`).
+
+## Despliegue en Render
+
+Este repositorio incluye un blueprint en [render.yaml](render.yaml) para publicar **una sola app web** en Render sin crear una base gestionada de pago:
+
+- La raíz `/` sirve la interfaz web unificada.
+- La API sigue disponible en `/api` y en los blueprints existentes (`/auth`, `/usuarios`, `/gym`, etc.).
+- `DATABASE_URL` se configura manualmente en el Web Service y apunta a una PostgreSQL externa.
+
+Resumen del flujo:
+
+1. Conecta el repositorio en Render como Web Service.
+2. Deja que Render lea [render.yaml](render.yaml).
+3. Añade la variable de entorno `DATABASE_URL` con la cadena de conexión de tu PostgreSQL externa.
+4. Abre la URL pública del Web Service: ese será el **único enlace** del proyecto.
 
 ## Tests
 

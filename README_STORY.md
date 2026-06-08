@@ -32,7 +32,7 @@ La aplicación principal se crea mediante una factory en [app/__init__.py](app/_
 - Flask-Migrate para migraciones.
 - Flask-JWT-Extended para autenticación por tokens.
 
-El punto de entrada del proyecto es [app.py](app.py), que arranca la API en modo desarrollo.
+El punto de entrada del proyecto es [run.py](run.py), que arranca la API en modo desarrollo.
 
 ## 4. Estructura de carpetas
 
@@ -190,11 +190,11 @@ Flujo básico para levantar el proyecto:
 1. Arrancar MySQL con Docker.
 2. Configurar las variables de entorno en `.env`.
 3. Activar el entorno virtual de Python.
-4. Ejecutar [app.py](app.py).
+4. Ejecutar [run.py](run.py).
 
 La documentación principal del proyecto está resumida en [README.md](README.md), pero este archivo sirve como explicación rápida de la rama Yeremi para el resto del equipo.
 
-## 10. Valor de la explicacion de esta rama
+## 10. Valor de la rama Yeremi
 
 Esta rama deja preparado el backend con una base funcional para el trabajo colaborativo: entidades principales, endpoints REST, autenticación JWT, protección por roles y una estructura modular que facilita seguir desarrollando el sistema sin mezclar responsabilidades.
 
@@ -400,10 +400,3 @@ git clone https://github.com/MYSGYMN/MYSGYM_FRONT.git
 ```
 
 ---
-
-Usa estas rutas en Postman contra la API, no contra MySQL:
-
-POST http://127.0.0.1:8000/auth/register
-POST http://127.0.0.1:8000/auth/login
-POST http://127.0.0.1:8000/auth/register-empleado
-POST http://127.0.0.1:8000/auth/login-empleado

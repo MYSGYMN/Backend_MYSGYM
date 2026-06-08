@@ -1,14 +1,16 @@
-def test_index_route(client):
-    """
-    Test básico para verificar que la raíz de la API responde correctamente.
-    Este es el 'Health Check' inicial.
-    """
+def test_home_page_route(client):
+    """La raíz debe servir la portada unificada del frontend."""
     response = client.get('/')
-    
-    # Verificamos que el código de estado sea 200 (OK)
+
     assert response.status_code == 200
-    
-    # Verificamos que la respuesta sea JSON y tenga el mensaje de bienvenida
+    assert b"MYSGYM" in response.data
+
+
+def test_api_health_route(client):
+    """La información de salud de la API vive en /api."""
+    response = client.get('/api')
+
+    assert response.status_code == 200
     data = response.get_json()
     assert data["status"] == "success"
     assert "Bienvenido a la API de MYSGYM" in data["message"]
